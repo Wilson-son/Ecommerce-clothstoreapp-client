@@ -30,6 +30,7 @@ function App() {
 
   return(
     <Router>
+      <Navebar/>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />

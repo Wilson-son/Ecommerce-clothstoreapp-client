@@ -1,6 +1,6 @@
 // src/pages/auth/ForgotPassword.jsx
 
-import { Mail, ArrowLeft, CheckCircle, Loader2 } from "lucide-react";
+import { Mail, ArrowLeft, CheckCircle, Loader2, RefreshCw } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,16 +29,19 @@ export default function ForgotPassword() {
   } = useForm({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data) => {
-    // Fix 3 — don't navigate away; show success message so user knows to check email
+    console.log("FORM SUBMITTED", data);
+
     await dispatch(forgotPasswordThunk(data));
   };
 
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: `url('${bglogo}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center", }}
+      style={{
+        background: `url('${bglogo}')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
       {/*  Fix 2 — removed nested duplicate card div */}
       <form
@@ -69,15 +72,33 @@ export default function ForgotPassword() {
             <div className="w-[52px] h-[52px] bg-green-50 rounded-full flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-green-500" />
             </div>
+
             <p className="text-[14px] font-semibold text-gray-800 text-center">
               Reset link sent!
             </p>
+
             <p className="text-[13px] text-gray-500 text-center">
               Check your inbox and follow the link to reset your password.
             </p>
+
+            <button
+              type="button"
+              onClick={() =>
+                dispatch(
+                  forgotPasswordThunk({
+                    email: document.querySelector('input[type="email"]')?.value,
+                  }),
+                )
+              }
+              className="mt-3 flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Resend Reset Link
+            </button>
+
             <Link
               to="/login"
-              className="mt-2 text-[13px] text-gray-900 font-semibold hover:underline"
+              className="text-[13px] text-gray-900 font-semibold hover:underline mt-2"
             >
               Back to login →
             </Link>
@@ -92,9 +113,13 @@ export default function ForgotPassword() {
             )}
 
             {/* Email field */}
-            <div className={`flex items-center gap-2.5 bg-[#f2f4f6] border rounded-[12px] px-3.5 h-12 mb-1 transition-all focus-within:bg-white ${
-              errors.email ? "border-red-400" : "border-gray-200 focus-within:border-gray-400"
-            }`}>
+            <div
+              className={`flex items-center gap-2.5 bg-[#f2f4f6] border rounded-[12px] px-3.5 h-12 mb-1 transition-all focus-within:bg-white ${
+                errors.email
+                  ? "border-red-400"
+                  : "border-gray-200 focus-within:border-gray-400"
+              }`}
+            >
               <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
               <input
                 {...register("email")}
@@ -104,7 +129,9 @@ export default function ForgotPassword() {
               />
             </div>
             {errors.email && (
-              <p className="text-red-500 text-[11px] mb-3 ml-1">{errors.email.message}</p>
+              <p className="text-red-500 text-[11px] mb-3 ml-1">
+                {errors.email.message}
+              </p>
             )}
 
             {/* Fix 2 — single className, type="submit" */}
@@ -114,13 +141,20 @@ export default function ForgotPassword() {
               className="w-full h-12 bg-gray-900 hover:bg-gray-800 disabled:opacity-60 active:scale-[0.98] text-white rounded-[12px] font-semibold text-[15px] transition-all mt-3 mb-5 flex items-center justify-center gap-2"
             >
               {loading ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
-              ) : "Send Reset Link"}
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Sending...
+                </>
+              ) : (
+                "Send Reset Link"
+              )}
             </button>
 
             <p className="text-center text-[13px] text-gray-500">
               Remember your password?{" "}
-              <Link to="/login" className="text-gray-900 font-semibold hover:underline">
+              <Link
+                to="/login"
+                className="text-gray-900 font-semibold hover:underline"
+              >
                 Sign in
               </Link>
             </p>

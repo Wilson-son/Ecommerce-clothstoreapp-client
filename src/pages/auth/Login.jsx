@@ -47,11 +47,9 @@ export default function Login() {
 
       const user = me.payload;
 
-      if (user?.role === "admin") {
-        nav("/admin/dashboard");
-      } else {
-        nav("/account");
-      }
+     
+        nav("/");
+      
     }
   };
 

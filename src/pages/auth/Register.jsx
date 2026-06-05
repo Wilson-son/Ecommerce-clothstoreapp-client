@@ -30,7 +30,7 @@ const registerSchema = z
 export default function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading, error,success} = useSelector((state) => state.auth);
 
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -44,8 +44,8 @@ export default function Register() {
   const onSubmit = async (data) => {
     const { confirmPassword, ...payload } = data; // don't send confirmPassword to API
     const res = await dispatch(registerThunk(payload));
-      if (registerThunk.fulfilled.match(result)) {
-      navigate("/verify-email", {
+      if (registerThunk.fulfilled.match(res)) {
+      navigate("/login", {
         state: { email: payload.email },
       });
     }
@@ -70,6 +70,9 @@ export default function Register() {
         noValidate
         className="bg-white/2 backdrop-blur-3xl border border-white/2 rounded-[24px] p-9 w-full max-w-[380px] shadow-xl"
       >
+
+      
+
         {/* Icon */}
         <div className="w-[52px] h-[52px] bg-white rounded-[14px] shadow-md flex items-center justify-center mx-auto mb-5">
           <UserPlus className="w-6 h-6 text-gray-800" />
