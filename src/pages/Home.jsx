@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { fetchProducts } from "../redux/slices/productSlice";
-import Navebar from "../components/Navebar";
+
 import ProductCard from "../components/ProductCard";
 
 import shopnowlogo from "../assets/shopnowlogo.png";
@@ -93,7 +93,7 @@ export default function Home() {
             Summer Collection New Modern Design
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-20 mt-10">
-            {products.slice(0, 8).map((product) => (
+            {products.slice(8, 16).map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
           </div>
