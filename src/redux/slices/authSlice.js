@@ -5,10 +5,7 @@ import {
   forgotPassword,
   resetPassword,
   resendVerification,
-  getCurrentUser,
 } from "../../api/authApi";
-
-
 
 // LOGIN
 export const loginThunk = createAsyncThunk(
@@ -18,9 +15,9 @@ export const loginThunk = createAsyncThunk(
       const res = await loginUser(data);
       return res.data.user;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.msg || "Login failed.");
+      return rejectWithValue(err.response?.data?.message|| "Login failed.");
     }
-  }
+  },
 );
 
 // REGISTER
@@ -31,9 +28,9 @@ export const registerThunk = createAsyncThunk(
       const res = await registerUser(data);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.msg || "Registration failed.");
+      return rejectWithValue(err.response?.data?.message || "Registration failed.");
     }
-  }
+  },
 );
 
 // LOAD USER (VERY IMPORTANT - COOKIE AUTH RESTORE)
@@ -46,46 +43,44 @@ export const loadUserThunk = createAsyncThunk(
     } catch (err) {
       return thunkAPI.rejectWithValue("Unauthorized");
     }
-  }
+  },
 );
 
 // PASSWORD / EMAIL THUNKS (UNCHANGED LOGIC)
 export const forgotPasswordThunk = createAsyncThunk(
-  "auth/forgotPassword",
+  "auth/forgot-password",
   async (data, { rejectWithValue }) => {
     try {
       const res = await forgotPassword(data.email);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.msg);
+      return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 export const resetPasswordThunk = createAsyncThunk(
-  "auth/resetPassword",
+  "auth/reset-password",
   async (data, { rejectWithValue }) => {
     try {
       const res = await resetPassword(data);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.msg);
+      return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
-
-
 export const resendVerificationThunk = createAsyncThunk(
-  "auth/resendVerification",
+  "auth/resend-verification",
   async (email, { rejectWithValue }) => {
     try {
       const res = await resendVerification(email);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.msg);
+      return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 // ─── SLICE ─────────────────────────────────────────────
@@ -136,7 +131,7 @@ const authSlice = createSlice({
       .addCase(registerThunk.pending, pending)
       .addCase(registerThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = action.payload.msg;
+        state.success = action.payload.message;
       })
       .addCase(registerThunk.rejected, rejected);
 
@@ -153,20 +148,30 @@ const authSlice = createSlice({
       });
 
     // OTHER THUNKS (same pattern)
+    
     builder
+      .addCase(forgotPasswordThunk.pending, pending)
       .addCase(forgotPasswordThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = action.payload.msg;
+        state.success = action.payload.message; // ← your backend sends "message" not "msg"
       })
+      .addCase(forgotPasswordThunk.rejected, rejected);
+
+    builder
+      .addCase(resetPasswordThunk.pending, pending)
       .addCase(resetPasswordThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = action.payload.msg;
+        state.success = action.payload.message;
       })
-      
+      .addCase(resetPasswordThunk.rejected, rejected);
+
+    builder
+      .addCase(resendVerificationThunk.pending, pending)
       .addCase(resendVerificationThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = action.payload.msg;
-      });
+        state.success = action.payload.message;
+      })
+      .addCase(resendVerificationThunk.rejected, rejected);
   },
 });
 
