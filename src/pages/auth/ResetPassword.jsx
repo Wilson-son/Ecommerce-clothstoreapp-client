@@ -1,17 +1,18 @@
 // src/pages/auth/ResetPassword.jsx
 
-import { useState } from "react";
-import { Lock, Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useDispatch, useSelector } from "react-redux";
-import { resetPasswordThunk } from "../../redux/slices/authSlice";
+import {
+  resetPasswordThunk,
+  clearMessages,
+} from "../../redux/slices/authSlice";
 
 import bglogo from "../../assets/bglogo.png";
-
-
 
 const schema = z
   .object({
@@ -27,11 +28,16 @@ const schema = z
 export default function ResetPassword() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const { loading, error, success } = useSelector((state) => state.auth);
+  
   const { token } = useParams();
   console.log("TOKEN FROM URL:", token);
 
-  const { loading, error, success } = useSelector((state) => state.auth);
+  useEffect(() => {
+    return () => {
+      dispatch(clearMessages());
+    };
+  }, [dispatch]);
 
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -49,8 +55,11 @@ export default function ResetPassword() {
     );
     console.log("RES:", res);
 
-    if (res.meta.requestStatus === "fulfilled") {
-      navigate("/login");
+    if (resetPasswordThunk.fulfilled.match(res)) {
+      setTimeout(() => {
+        dispatch(clearMessages());
+        navigate("/login");
+      }, 1000);
     }
   };
 
@@ -84,6 +93,12 @@ export default function ResetPassword() {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-[13px] rounded-[10px] px-4 py-2.5 mb-4 text-center">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-600 text-[13px] rounded-[10px] px-4 py-2.5 mb-4 text-center">
+            {success}
           </div>
         )}
 

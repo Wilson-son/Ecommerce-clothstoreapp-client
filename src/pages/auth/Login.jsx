@@ -25,7 +25,7 @@ export default function Login() {
 
   const [showPw, setShowPw] = useState(false);
 
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading, error, success } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -35,21 +35,24 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  useEffect(() => {
-    return () => dispatch(clearMessages());
-  }, [dispatch]);
+ useEffect(() => {
+  return () => dispatch(clearMessages());
+}, [dispatch]);
 
   const onSubmit = async (data) => {
     const result = await dispatch(loginThunk(data));
+    console.log("Login Result:", result);
 
     if (loginThunk.fulfilled.match(result)) {
-      const me = await dispatch(loadUserThunk());
-
-      const user = me.payload;
-
-     
-        nav("/");
+      console.log("Login Success");
       
+
+   
+
+      setTimeout(() => {
+        dispatch(clearMessages());
+        nav("/");
+      }, 1500);
     }
   };
 
@@ -97,6 +100,12 @@ export default function Login() {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-[13px] rounded-[10px] px-4 py-2.5 mb-4 text-center">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-600 text-[13px] rounded-[10px] px-4 py-2.5 mb-4 text-center">
+            {success}
           </div>
         )}
 

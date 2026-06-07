@@ -1,12 +1,15 @@
 // src/pages/auth/ForgotPassword.jsx
-
+import { useState, useEffect } from "react";
 import { Mail, ArrowLeft, CheckCircle, Loader2, RefreshCw } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useDispatch, useSelector } from "react-redux";
-import { forgotPasswordThunk } from "../../redux/slices/authSlice";
+import {
+  forgotPasswordThunk,
+  clearMessages,
+} from "../../redux/slices/authSlice";
 
 import bglogo from "../../assets/bglogo.png";
 
@@ -19,8 +22,16 @@ export default function ForgotPassword() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [submittedEmail, setSubmittedEmail] = useState("");
+
   // Fix 4 — use `success` not `message` (matches your authSlice)
   const { loading, error, success } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearMessages());
+    };
+  }, [dispatch]);
 
   const {
     register,
@@ -29,8 +40,7 @@ export default function ForgotPassword() {
   } = useForm({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data) => {
-    console.log("FORM SUBMITTED", data);
-
+    setSubmittedEmail(data.email);
     await dispatch(forgotPasswordThunk(data));
   };
 
@@ -78,7 +88,7 @@ export default function ForgotPassword() {
             </p>
 
             <p className="text-[13px] text-gray-500 text-center">
-              Check your inbox and follow the link to reset your password.
+              We've sent a reset link to <strong>{submittedEmail}</strong>.
             </p>
 
             <button
@@ -86,7 +96,7 @@ export default function ForgotPassword() {
               onClick={() =>
                 dispatch(
                   forgotPasswordThunk({
-                    email: document.querySelector('input[type="email"]')?.value,
+                    email: submittedEmail,
                   }),
                 )
               }

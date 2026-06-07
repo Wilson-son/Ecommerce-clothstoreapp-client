@@ -5,6 +5,7 @@ import {
   forgotPassword,
   resetPassword,
   resendVerification,
+  getCurrentUser,
 } from "../../api/authApi";
 
 // LOGIN
@@ -13,7 +14,7 @@ export const loginThunk = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const res = await loginUser(data);
-      return res.data.user;
+      return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message|| "Login failed.");
     }
@@ -35,7 +36,7 @@ export const registerThunk = createAsyncThunk(
 
 // LOAD USER (VERY IMPORTANT - COOKIE AUTH RESTORE)
 export const loadUserThunk = createAsyncThunk(
-  "auth/loadUser",
+  "auth/me",
   async (_, thunkAPI) => {
     try {
       const res = await getCurrentUser();
@@ -121,8 +122,10 @@ const authSlice = createSlice({
     builder
       .addCase(loginThunk.pending, pending)
       .addCase(loginThunk.fulfilled, (state, action) => {
+       console.log("Reducer Success:", action.payload.message);
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
+        state.success = action.payload.message;
       })
       .addCase(loginThunk.rejected, rejected);
 

@@ -31,6 +31,7 @@ export const resendVerification = (email) =>
 // ================= SESSION =================
 
 // get current logged-in user (USED BY REDUX HYDRATION)
+export const getCurrentUser = () => API.get("/auth/me");
 
 
 // logout (works for BOTH oauth + normal login)

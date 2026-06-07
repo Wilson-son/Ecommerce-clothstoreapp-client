@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import Navebar from './components/Navebar';
 import Layout from './components/Layout';
 import Home from './pages/Home';
+import Admin from './pages/adminPage/Admin';
 import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import Login from './pages/auth/Login';
@@ -34,9 +35,11 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/cart" element={<Cart />} />
+          <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
+          <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         </Route>
+
+        <Route path="/admin" element={<Admin />} />
 
         {/* Pages without footer/navbar */}
         <Route path="/login" element={<Login />} />

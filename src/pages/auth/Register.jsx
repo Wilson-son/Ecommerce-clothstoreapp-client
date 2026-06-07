@@ -1,6 +1,6 @@
 // src/pages/auth/Register.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
 import { Mail, Lock, Eye, EyeOff, User, UserPlus, Loader2 } from "lucide-react";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
-import { registerThunk } from "../../redux/slices/authSlice";
+import { registerThunk, clearMessages } from "../../redux/slices/authSlice";
 
 import bglogo from "../../assets/bglogo.png";
 
@@ -30,7 +30,15 @@ const registerSchema = z
 export default function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error,success} = useSelector((state) => state.auth);
+  const { loading, error, success } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(clearMessages());
+
+    return () => {
+      dispatch(clearMessages());
+    };
+  }, [dispatch]);
 
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -42,12 +50,18 @@ export default function Register() {
   } = useForm({ resolver: zodResolver(registerSchema) });
 
   const onSubmit = async (data) => {
-    const { confirmPassword, ...payload } = data; // don't send confirmPassword to API
+    const { confirmPassword, ...payload } = data;
+
     const res = await dispatch(registerThunk(payload));
-      if (registerThunk.fulfilled.match(res)) {
-      navigate("/login", {
-        state: { email: payload.email },
-      });
+
+    if (registerThunk.fulfilled.match(res)) {
+      setTimeout(() => {
+        dispatch(clearMessages());
+
+        navigate("/login", {
+          state: { email: payload.email },
+        });
+      }, 1500);
     }
   };
 
@@ -70,9 +84,6 @@ export default function Register() {
         noValidate
         className="bg-white/2 backdrop-blur-3xl border border-white/2 rounded-[24px] p-9 w-full max-w-[380px] shadow-xl"
       >
-
-      
-
         {/* Icon */}
         <div className="w-[52px] h-[52px] bg-white rounded-[14px] shadow-md flex items-center justify-center mx-auto mb-5">
           <UserPlus className="w-6 h-6 text-gray-800" />
@@ -95,6 +106,11 @@ export default function Register() {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-[13px] rounded-[10px] px-4 py-2.5 mb-4 text-center">
             {error}
+          </div>
+        )}
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-600 text-[13px] rounded-[10px] px-4 py-2.5 mb-4 text-center">
+            {success}
           </div>
         )}
 
@@ -198,8 +214,6 @@ export default function Register() {
             "Get Started"
           )}
         </button>
-
-        
       </form>
     </div>
   );
