@@ -2,9 +2,9 @@ import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchProducts } from "../redux/slices/productSlice";
-
 import ProductCard from "../components/ProductCard";
+
+import { useGetProductsQuery } from "../redux/api/productApiSlice";
 
 import shopnowlogo from "../assets/shopnowlogo.png";
 import tralleylogo from "../assets/tralleylogo.png";
@@ -15,15 +15,18 @@ import girlsfashion from "../assets/girlsfashion.jpg";
 import tribe from "../assets/tribe.jpg";
 import whitetshirt from "../assets/whitetshirt.jpg";
 
+
+
 export default function Home() {
-  const dispatch = useDispatch();
+   console.log("HOME RENDERED");
+  const { data, isLoading, error } = useGetProductsQuery();
+   console.log("Query Result:", { data, isLoading, error });
 
-  const { products, loading, error } = useSelector((state) => state.products);
+  const products = data?.products || data || [];
+  console.log("Products:", products);
+ console.log( "image:", products[0]?.image);
 
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
-
+  
   return (
     <>
       <div className="flex flex-col lg:flex-row items-center justify-between bg-[#F0F0F0] px-8 lg:px-20 ">
@@ -65,9 +68,12 @@ export default function Home() {
             Summer Collection New Modern Design
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-20 mt-10">
-            {products.slice(0, 8).map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
+            {Array.isArray(products) &&
+              products
+                .slice(0, 8)
+                .map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
           </div>
 
           <div
@@ -127,7 +133,7 @@ export default function Home() {
                   Shop Now
                 </button>
               </div>
-                {/*second image*/}
+              {/*second image*/}
               <div
                 className="flex flex-col justify-center items-start p-8"
                 style={{
@@ -162,8 +168,12 @@ export default function Home() {
                   backgroundPosition: "center",
                 }}
               >
-                <h1 className="text-4xl font-bold text-center mt-2 text-white">SEASONAL SALE</h1>
-                <p className="text-black-500 text-center mt-4 text-lg">Winter Collection - New Trendy Design</p>
+                <h1 className="text-4xl font-bold text-center mt-2 text-white">
+                  SEASONAL SALE
+                </h1>
+                <p className="text-black-500 text-center mt-4 text-lg">
+                  Winter Collection - New Trendy Design
+                </p>
               </div>
               <div
                 className="flex flex-col justify-center items-start p-8"
@@ -175,8 +185,12 @@ export default function Home() {
                   backgroundPosition: "center",
                 }}
               >
-                 <h1 className="text-4xl font-bold text-center mt-2 text-white">NEW FOOTWEAR COLLECTION</h1>
-                <p className="text-orange-500 text-center mt-4 text-lg">Spring / Summer 2023</p>
+                <h1 className="text-4xl font-bold text-center mt-2 text-white">
+                  NEW FOOTWEAR COLLECTION
+                </h1>
+                <p className="text-orange-500 text-center mt-4 text-lg">
+                  Spring / Summer 2023
+                </p>
               </div>
               <div
                 className="flex flex-col justify-center items-start p-8"
@@ -188,8 +202,13 @@ export default function Home() {
                   backgroundPosition: "center",
                 }}
               >
-                  <h1 className="text-4xl font-bold text-center mt-2 text-white">T-SHIRTS</h1>  
-                  <p className="text-red-500 text-center mt-4 text-lg"> New Trendy Prints</p>
+                <h1 className="text-4xl font-bold text-center mt-2 text-white">
+                  T-SHIRTS
+                </h1>
+                <p className="text-red-500 text-center mt-4 text-lg">
+                  {" "}
+                  New Trendy Prints
+                </p>
               </div>
             </div>
           </div>

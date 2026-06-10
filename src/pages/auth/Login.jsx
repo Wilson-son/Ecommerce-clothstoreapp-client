@@ -25,7 +25,7 @@ export default function Login() {
 
   const [showPw, setShowPw] = useState(false);
 
-  const { loading, error, success } = useSelector((state) => state.auth);
+  const { user, loading, error, success } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -35,24 +35,28 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
- useEffect(() => {
-  return () => dispatch(clearMessages());
-}, [dispatch]);
+  useEffect(() => {
+    return () => dispatch(clearMessages());
+  }, [dispatch]);
 
   const onSubmit = async (data) => {
     const result = await dispatch(loginThunk(data));
     console.log("Login Result:", result);
 
     if (loginThunk.fulfilled.match(result)) {
+      const loggedInUser = result.payload.user;
       console.log("Login Success");
-      
-
-   
 
       setTimeout(() => {
         dispatch(clearMessages());
-        nav("/");
-      }, 1500);
+
+        
+        if (loggedInUser?.role === "admin") {
+          nav("/admin");
+        } else {
+          nav("/");
+        }
+      }, 500);
     }
   };
 

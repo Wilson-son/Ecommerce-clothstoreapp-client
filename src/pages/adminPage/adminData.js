@@ -1,9 +1,54 @@
 export const mockProducts = [
-  { id: 1, name: "Floral Silk Kurta", brand: "Aurelia", category: "Kurtas", price: 1299, stock: 45, rating: 4, image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P1" },
-  { id: 2, name: "Cotton Palazzo Set", brand: "Biba", category: "Sets", price: 1899, stock: 12, rating: 5, image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P2" },
-  { id: 3, name: "Embroidered Dupatta", brand: "W", category: "Accessories", price: 599, stock: 0, rating: 3, image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P3" },
-  { id: 4, name: "Anarkali Suit", brand: "Libas", category: "Suits", price: 2499, stock: 8, rating: 4, image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P4" },
-  { id: 5, name: "Printed Saree", brand: "Nalli", category: "Sarees", price: 3299, stock: 21, rating: 5, image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P5" },
+  {
+    id: 1,
+    name: "Floral Silk Kurta",
+    brand: "Aurelia",
+    category: "Kurtas",
+    price: 1299,
+    stock: 45,
+    rating: 4,
+    image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P1",
+  },
+  {
+    id: 2,
+    name: "Cotton Palazzo Set",
+    brand: "Biba",
+    category: "Sets",
+    price: 1899,
+    stock: 12,
+    rating: 5,
+    image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P2",
+  },
+  {
+    id: 3,
+    name: "Embroidered Dupatta",
+    brand: "W",
+    category: "Accessories",
+    price: 599,
+    stock: 0,
+    rating: 3,
+    image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P3",
+  },
+  {
+    id: 4,
+    name: "Anarkali Suit",
+    brand: "Libas",
+    category: "Suits",
+    price: 2499,
+    stock: 8,
+    rating: 4,
+    image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P4",
+  },
+  {
+    id: 5,
+    name: "Printed Saree",
+    brand: "Nalli",
+    category: "Sarees",
+    price: 3299,
+    stock: 21,
+    rating: 5,
+    image: "https://via.placeholder.com/60x60/e8f6ea/088178?text=P5",
+  },
 ];
 
 export const mockSubscribers = [
@@ -14,10 +59,20 @@ export const mockSubscribers = [
 ];
 
 export const categories = [
+
+  "Blazers",
+  "Casual Shirts",
+  "Formal Shirts",
   "Kurtas",
-  "Sets",
-  "Accessories",
+  "T-Shirts",
+  "Trousers",
+  "Shirts",
+  "Hoodies",
+  "Jeans",
+  "Jackets",
   "Suits",
   "Sarees",
-  "Lehengas"
+  "Shorts",
+  "Sweatshirts",
+  "Lehengas",
 ];

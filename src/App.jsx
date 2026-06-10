@@ -1,24 +1,27 @@
-import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
+import Navebar from "./components/Navebar";
+import Layout from "./components/Layout";
+import Home from "./pages/Home";
 
-import Navebar from './components/Navebar';
-import Layout from './components/Layout';
-import Home from './pages/Home';
-import Admin from './pages/adminPage/Admin';
-import Shop from './pages/Shop';
-import Cart from './pages/Cart';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import ForgotPassword from './pages/auth/ForgotPassword';
-import ResetPassword from './pages/auth/ResetPassword';
-import Newsletter from './components/NewsLetter';
-import Footer from './components/Footer';
+import Shop from "./pages/Shop";
+import Cart from "./pages/Cart";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+import Newsletter from "./components/NewsLetter";
+import Footer from "./components/Footer";
 
+import Admin from "./pages/adminpage/Admin";
+import SubscriptionPage from "./pages/adminpage/SubscriptionPage";
+import AddProduct from "./pages/adminpage/AddProduct";
+import EditProduct from "./pages/adminpage/EditProduct";
 import ProtectedRoute from "./routes/ProtectedRoute";
-
+import AdminRoute from "./routes/AdminRoute";
 
 import { loadUserThunk } from "./redux/slices/authSlice";
 
@@ -29,18 +32,21 @@ function App() {
     dispatch(loadUserThunk());
   }, [dispatch]);
 
-  return(
+  return (
     <Router>
-      <Navebar/>
+      <Navebar />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
-          <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+          <Route path="/shop" element={<ProtectedRoute>  <Shop /> </ProtectedRoute>}
+          />
+          <Route path="/cart" element={   <ProtectedRoute>     <Cart />   </ProtectedRoute> }/>
         </Route>
 
-        <Route path="/admin" element={<Admin />} />
-
+        <Route  path="/admin" element={<AdminRoute><Admin /> </AdminRoute> } />
+          <Route path="/admin/subscriptions" element={<AdminRoute><SubscriptionPage /> </AdminRoute>} />
+          <Route path="/admin/add-product" element={<AdminRoute><AddProduct /> </AdminRoute>} />
+          <Route path="/admin/edit-product/:id" element={<AdminRoute><EditProduct /> </AdminRoute>} />
         {/* Pages without footer/navbar */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -51,6 +57,5 @@ function App() {
       </Routes>
     </Router>
   );
-
 }
 export default App;

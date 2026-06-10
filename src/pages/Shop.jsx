@@ -18,6 +18,9 @@ import {
   selectSelectedSizes,
   selectMaxPrice,
 } from "../redux/slices/shopSlice";
+
+
+
 import FilterSidebar from "../components/FilterSidebar";
 import ProductCard from "../components/ProductCard";
 

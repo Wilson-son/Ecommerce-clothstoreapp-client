@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import AdminSidebar from "./AdminSidebar";
-import AdminTopbar from "./AdminTopbar";
-import DashboardPage from "./DashboardPage";
-import ProductsPage from "./ProductsPage";
+import AdminSidebar from "./AdminSidebar.jsx";
+import AdminTopbar from "./AdminTopbar.jsx";
+import DashboardPage from "./DashboardPage.jsx";
+import ProductsPage from "./ProductsPage.jsx";
 import SubscriptionPage from "./SubscriptionPage";
 import { mockProducts, mockSubscribers } from "./adminData.js";
 
@@ -36,7 +36,7 @@ export default function Admin() {
             <ProductsPage products={products} setProducts={setProducts} />
           )}
           {activeTab === "newsletter" && (
-            <NewsletterPage
+            <SubscriptionPage
               subscribers={subscribers}
               setSubscribers={setSubscribers}
             />

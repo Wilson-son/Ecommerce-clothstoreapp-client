@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
-import { getFilteredProducts } from "../../api/productApi"; // ← from productApi
+
 
 // ─── Thunk ───────────────────────────────────────────────────────────────────
 
