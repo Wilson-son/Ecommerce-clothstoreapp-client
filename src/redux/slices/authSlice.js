@@ -16,7 +16,7 @@ export const loginThunk = createAsyncThunk(
       const res = await loginUser(data);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message|| "Login failed.");
+      return rejectWithValue(err.response?.data?.message || "Login failed.");
     }
   },
 );
@@ -29,25 +29,28 @@ export const registerThunk = createAsyncThunk(
       const res = await registerUser(data);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Registration failed.");
+      return rejectWithValue(
+        err.response?.data?.message || "Registration failed."
+      );
     }
   },
 );
 
-// LOAD USER (VERY IMPORTANT - COOKIE AUTH RESTORE)
+// LOAD USER (COOKIE AUTH RESTORE)
 export const loadUserThunk = createAsyncThunk(
   "auth/me",
-  async (_, thunkAPI) => {
+  async (_, { rejectWithValue }) => {
     try {
       const res = await getCurrentUser();
       return res.data.user;
     } catch (err) {
-      return thunkAPI.rejectWithValue("Unauthorized");
+      // Silently reject — a 401 here is expected on first load
+      return rejectWithValue(err.response?.data?.message || "Unauthorized");
     }
   },
 );
 
-// PASSWORD / EMAIL THUNKS (UNCHANGED LOGIC)
+// FORGOT PASSWORD
 export const forgotPasswordThunk = createAsyncThunk(
   "auth/forgot-password",
   async (data, { rejectWithValue }) => {
@@ -55,11 +58,14 @@ export const forgotPasswordThunk = createAsyncThunk(
       const res = await forgotPassword(data.email);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to send reset email."
+      );
     }
   },
 );
 
+// RESET PASSWORD
 export const resetPasswordThunk = createAsyncThunk(
   "auth/reset-password",
   async (data, { rejectWithValue }) => {
@@ -67,11 +73,14 @@ export const resetPasswordThunk = createAsyncThunk(
       const res = await resetPassword(data);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Password reset failed."
+      );
     }
   },
 );
 
+// RESEND VERIFICATION
 export const resendVerificationThunk = createAsyncThunk(
   "auth/resend-verification",
   async (email, { rejectWithValue }) => {
@@ -79,7 +88,9 @@ export const resendVerificationThunk = createAsyncThunk(
       const res = await resendVerification(email);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to resend verification email."
+      );
     }
   },
 );
@@ -90,7 +101,8 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: null,
-    loading: true,
+    loading: false,        // thunk-specific loading (not used for initial auth check)
+    authInitialized: false, // true once loadUserThunk has settled (fulfilled or rejected)
     error: null,
     success: null,
   },
@@ -98,6 +110,10 @@ const authSlice = createSlice({
   reducers: {
     logout(state) {
       state.user = null;
+      state.loading = false;
+      state.error = null;
+      state.success = null;
+      // authInitialized stays true — the user was already verified, now logged out
     },
 
     clearMessages(state) {
@@ -122,7 +138,6 @@ const authSlice = createSlice({
     builder
       .addCase(loginThunk.pending, pending)
       .addCase(loginThunk.fulfilled, (state, action) => {
-       console.log("Reducer Success:", action.payload.message);
         state.loading = false;
         state.user = action.payload.user;
         state.success = action.payload.message;
@@ -130,6 +145,7 @@ const authSlice = createSlice({
       .addCase(loginThunk.rejected, rejected);
 
     // REGISTER
+    // Note: does not set state.user — adjust if backend auto-logs in on register
     builder
       .addCase(registerThunk.pending, pending)
       .addCase(registerThunk.fulfilled, (state, action) => {
@@ -139,27 +155,34 @@ const authSlice = createSlice({
       .addCase(registerThunk.rejected, rejected);
 
     // LOAD USER (COOKIE RESTORE)
+    // Uses authInitialized, not loading, so unrelated UI doesn't flash a spinner
     builder
-      .addCase(loadUserThunk.pending, pending)
+      .addCase(loadUserThunk.pending, (state) => {
+        state.error = null;
+        state.success = null;
+        // Deliberately not setting loading: true here —
+        // gate your app shell on authInitialized instead
+      })
       .addCase(loadUserThunk.fulfilled, (state, action) => {
-        state.loading = false;
         state.user = action.payload;
+        state.authInitialized = true;
       })
       .addCase(loadUserThunk.rejected, (state) => {
-        state.loading = false;
+        // A 401 on cookie restore is expected; don't surface it as an error
         state.user = null;
+        state.authInitialized = true;
       });
 
-    // OTHER THUNKS (same pattern)
-    
+    // FORGOT PASSWORD
     builder
       .addCase(forgotPasswordThunk.pending, pending)
       .addCase(forgotPasswordThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.success = action.payload.message; // ← your backend sends "message" not "msg"
+        state.success = action.payload.message;
       })
       .addCase(forgotPasswordThunk.rejected, rejected);
 
+    // RESET PASSWORD
     builder
       .addCase(resetPasswordThunk.pending, pending)
       .addCase(resetPasswordThunk.fulfilled, (state, action) => {
@@ -168,6 +191,7 @@ const authSlice = createSlice({
       })
       .addCase(resetPasswordThunk.rejected, rejected);
 
+    // RESEND VERIFICATION
     builder
       .addCase(resendVerificationThunk.pending, pending)
       .addCase(resendVerificationThunk.fulfilled, (state, action) => {

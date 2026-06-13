@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {logout} from "./authSlice";
+import { logout } from "./authSlice";
 import axios from "axios";
 
 export const fetchAdminDashboard = createAsyncThunk(
@@ -7,16 +7,16 @@ export const fetchAdminDashboard = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/admin/dashboard",
+        `${import.meta.env.VITE_API_URL}/admin/stats`,
         {
-          withCredentials: true, 
+          withCredentials: true,
         }
       );
-
+  
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Something went wrong"
+        err.response?.data?.msg || "Something went wrong."
       );
     }
   }
@@ -29,11 +29,16 @@ const adminSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearError(state) {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAdminDashboard.pending, (state) => {
         state.loading = true;
+        state.error = null; // clear previous error before each new request
       })
       .addCase(fetchAdminDashboard.fulfilled, (state, action) => {
         state.loading = false;
@@ -41,10 +46,10 @@ const adminSlice = createSlice({
       })
       .addCase(fetchAdminDashboard.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Request failed";
+        state.error = action.payload || "Request failed.";
       })
 
-      
+      // Handles cross-slice reset — logout must remain a plain action (not a thunk)
       .addCase(logout, (state) => {
         state.data = null;
         state.loading = false;
@@ -53,4 +58,5 @@ const adminSlice = createSlice({
   },
 });
 
+export const { clearError } = adminSlice.actions;
 export default adminSlice.reducer;

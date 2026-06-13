@@ -1,17 +1,10 @@
-// src/components/Newsletter.jsx
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  subscribeNewsletter,
-  resetNewsletter,
-} from "../redux/slices/newsletterSlice";
+import { useSubscribeMutation } from "../redux/api/newsletterApiSlice";
+import { FiCheckCircle, FiAlertCircle, FiLoader } from "react-icons/fi";
 
-import newsletterBg from "../assets/newsletterbg.png";
-
-// ── Zod schema ──────────────────────────────────────────────
 const newsletterSchema = z.object({
   email: z
     .string()
@@ -19,10 +12,11 @@ const newsletterSchema = z.object({
     .email("Please enter a valid email address."),
 });
 
-// ── Component ────────────────────────────────────────────────
+// status: "idle" | "loading" | "success" | "error" | "duplicate"
 export default function Newsletter() {
-  const dispatch = useDispatch();
-  const { status, error } = useSelector((state) => state.newsletter);
+  const [subscribe] = useSubscribeMutation();
+  const [uiStatus, setUiStatus] = useState("idle");
+  const [serverMsg, setServerMsg] = useState("");
 
   const {
     register,
@@ -34,112 +28,119 @@ export default function Newsletter() {
     defaultValues: { email: "" },
   });
 
-  useEffect(() => {
-    if (status === "succeeded") {
-      reset();
-    }
-  }, [status, reset]);
+  const onSubmit = async ({ email }) => {
+    setUiStatus("loading");
+    setServerMsg("");
 
-  const onSubmit = ({ email }) => {
-    dispatch(subscribeNewsletter(email));
+    try {
+      const res = await subscribe(email.trim().toLowerCase()).unwrap();
+      console.log(" Subscribe response:", res); 
+      setUiStatus("success");
+      reset();
+
+      // auto-reset after 6s
+      setTimeout(() => setUiStatus("idle"), 6000);
+    } catch (err) {
+      console.error("❌ Subscribe error:", err); // check what error looks like
+      const msg = err?.data?.message || "";
+
+      // detect "already subscribed" from your backend message
+      if (
+        msg.toLowerCase().includes("already") ||
+        msg.toLowerCase().includes("exist")
+      ) {
+        setUiStatus("duplicate");
+        setServerMsg(msg);
+      } else {
+        setUiStatus("error");
+        setServerMsg(msg || "Something went wrong. Please try again.");
+      }
+
+      setTimeout(() => setUiStatus("idle"), 6000);
+    }
   };
 
+  const isLoading = uiStatus === "loading";
+
   return (
-    <section
-  className="relative  overflow-hidden py-12"
-  style={{
-    backgroundImage: `url(${newsletterBg})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  }}
->
-
-  <div className="max-w-6xl mx-auto px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-8">
-    {/* Left — heading + subtext */}
-    <div className="flex-1">
-      <h2 className="text-white text-2xl md:text-[28px] font-bold font-serif mb-2 leading-tight">
-        Sign Up For Newsletters
-      </h2>
-
-      <p className="text-sm text-blue-200">
-        Get E-mail updates about our latest shop and{" "}
-        <span className="font-medium text-[#e8b84b]">
+    <div>
+      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900 mb-4">
+        Newsletter
+      </h3>
+      <p className="text-[13.5px] text-gray-500 mb-4 leading-relaxed">
+        Get email updates about our latest shop and{" "}
+        <span className="text-[#008073] font-semibold cursor-pointer hover:underline">
           special offers.
         </span>
       </p>
-    </div>
 
-    {/* Right — form */}
-    <div className="flex-1 w-full max-w-lg">
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className="flex h-[52px] rounded overflow-hidden shadow-lg">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full">
+        <div className="flex items-center gap-2">
           <input
             type="email"
             placeholder="Your email address"
-            disabled={status === "loading"}
+            disabled={isLoading}
             {...register("email")}
             aria-label="Email address"
-            className={`flex-1 min-w-0 px-5 text-sm text-gray-800 outline-none placeholder-gray-400
-              disabled:opacity-70 disabled:cursor-not-allowed
-              ${
-                errors.email
-                  ? "bg-red-50"
-                  : "bg-white focus:bg-gray-50"
-              }
-              transition-colors duration-150`}
+            className={`flex-1 h-[44px] px-4 text-sm text-gray-800 bg-white border rounded outline-none transition-colors placeholder-gray-400
+              disabled:opacity-70 disabled:cursor-not-allowed focus:border-[#008073]
+              ${errors.email ? "border-red-300" : "border-gray-300"}`}
           />
 
           <button
             type="submit"
-            disabled={status === "loading"}
-            className="flex-shrink-0 min-w-[110px] px-7 text-sm font-bold tracking-wide
-              flex items-center justify-center
-              hover:brightness-90 active:scale-95
-              transition-all duration-200
-              disabled:opacity-75 disabled:cursor-not-allowed"
-            style={{
-              backgroundColor: "#e8b84b",
-              color: "#1a2744",
-            }}
+            disabled={isLoading}
+            className="h-[44px] px-5 bg-[#008073] hover:bg-[#00665c] text-white text-sm font-semibold rounded transition-colors duration-200 disabled:opacity-75 disabled:cursor-not-allowed whitespace-nowrap flex items-center justify-center gap-2 flex-shrink-0 min-w-[120px]"
           >
-            {status === "loading" ? (
-              <span
-                className="w-[18px] h-[18px] rounded-full animate-spin border-2"
-                style={{
-                  borderColor: "rgba(26,39,68,0.25)",
-                  borderTopColor: "#1a2744",
-                }}
-                aria-label="Loading"
-              />
+            {isLoading ? (
+              <>
+                <span className="w-3.5 h-3.5 rounded-full animate-spin border-2 border-white/30 border-t-white" />
+                Subscribing...
+              </>
             ) : (
-              "Sign Up"
+              "Subscribe"
             )}
           </button>
         </div>
 
+      
         {errors.email && (
-          <p className="mt-1.5 text-xs text-red-400 pl-1" role="alert">
-            {errors.email.message}
-          </p>
+          <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border border-red-200">
+            <FiAlertCircle className="text-red-500 w-3.5 h-3.5 flex-shrink-0" />
+            <p className="text-xs text-red-600 font-medium">
+              {errors.email.message}
+            </p>
+          </div>
         )}
 
-        {status === "failed" && error && (
-          <p className="mt-1.5 text-xs text-red-400 pl-1" role="alert">
-            {error}
-          </p>
+      
+        {uiStatus === "success" && (
+          <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200">
+            <FiCheckCircle className="text-emerald-500 w-3.5 h-3.5 flex-shrink-0" />
+            <p className="text-xs text-emerald-700 font-semibold">
+              You're subscribed! Thanks for joining.
+            </p>
+          </div>
         )}
 
-        {status === "succeeded" && (
-          <p
-            className="mt-1.5 text-xs text-teal-300 font-medium pl-1"
-            role="status"
-          >
-            ✓ You've successfully subscribed!
-          </p>
+     
+        {uiStatus === "duplicate" && (
+          <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200">
+            <FiAlertCircle className="text-amber-500 w-3.5 h-3.5 flex-shrink-0" />
+            <p className="text-xs text-amber-700 font-medium">
+              {serverMsg || "This email is already subscribed."}
+            </p>
+          </div>
+        )}
+
+       
+        {uiStatus === "error" && (
+          <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border border-red-200">
+            <FiAlertCircle className="text-red-500 w-3.5 h-3.5 flex-shrink-0" />
+            <p className="text-xs text-red-600 font-medium">{serverMsg}</p>
+          </div>
         )}
       </form>
     </div>
-  </div>
-</section>
   );
 }

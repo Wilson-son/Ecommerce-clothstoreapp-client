@@ -2,11 +2,11 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function ProtectedRoute({ children }) {
-  const { user, loading } = useSelector(
+  const { user, authInitialized } = useSelector(
     (state) => state.auth
   );
 
-  if (loading) {
+  if (!authInitialized) {
     return <div>Loading...</div>;
   }
 

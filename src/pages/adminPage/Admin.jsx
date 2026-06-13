@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import AdminSidebar from "./AdminSidebar.jsx";
 import AdminTopbar from "./AdminTopbar.jsx";
+import AddProduct from "./AddProduct.jsx";
+import EditProduct from "./EditProduct.jsx";
 import DashboardPage from "./DashboardPage.jsx";
 import ProductsPage from "./ProductsPage.jsx";
 import SubscriptionPage from "./SubscriptionPage";
-import { mockProducts, mockSubscribers } from "./adminData.js";
+
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [products, setProducts] = useState(mockProducts);
-  const [subscribers, setSubscribers] = useState(mockSubscribers);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editModal, setEditModal] = useState(null);
+  
 
   return (
     <div className="min-h-screen bg-[#F3F5FB] flex">
@@ -22,26 +25,34 @@ export default function Admin() {
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <AdminTopbar activeTab={activeTab} />
+        <AdminTopbar
+          activeTab={activeTab}
+          onAddProduct={() => setShowAddModal(true)}
+        />
 
         <main className="flex-1 p-6 overflow-auto">
           {activeTab === "dashboard" && (
             <DashboardPage
-              products={products}
-              subscribers={subscribers}
+              
               setActiveTab={setActiveTab}
             />
           )}
           {activeTab === "products" && (
-            <ProductsPage products={products} setProducts={setProducts} />
-          )}
-          {activeTab === "newsletter" && (
-            <SubscriptionPage
-              subscribers={subscribers}
-              setSubscribers={setSubscribers}
+            <ProductsPage
+              onAddProduct={() => setShowAddModal(true)}
+              onEditProduct={(product) => setEditModal(product)}
             />
           )}
+          {activeTab === "newsletter" && (
+            <SubscriptionPage/>
+          )}
         </main>
+
+        {showAddModal && <AddProduct onClose={() => setShowAddModal(false)} />}
+
+        {editModal && (
+          <EditProduct product={editModal} onClose={() => setEditModal(null)} />
+        )}
       </div>
     </div>
   );

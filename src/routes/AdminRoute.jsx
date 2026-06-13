@@ -1,12 +1,13 @@
-import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import Unauthorized from "../pages/Unauthorized";
+import { useSelector } from "react-redux";
 
 export default function AdminRoute({ children }) {
-  const { user, loading } = useSelector((state) => state.auth);
+  const { user, authInitialized } = useSelector(
+    (state) => state.auth
+  );
 
-  if (loading) {
-    return <h1>Loading...</h1>;
+  if (!authInitialized) {
+    return <div>Loading...</div>;
   }
 
   if (!user) {
@@ -14,7 +15,7 @@ export default function AdminRoute({ children }) {
   }
 
   if (user.role !== "admin") {
-    return <Unauthorized />;
+    return <Navigate to="/" replace />;
   }
 
   return children;

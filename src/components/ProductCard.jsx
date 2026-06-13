@@ -1,49 +1,123 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
-import { FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiHeart } from "react-icons/fi";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import { addToCart } from "../redux/slices/cartSlice";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../redux/slices/wishlistSlice";
 
 export default function ProductCard({ product }) {
-  return (
-    <div className="w-84 h-116 bg-white border border-[#cdeef0] rounded-3xl p-3 shadow-sm hover:shadow-md transition duration-300">
-      {/* Image area */}
-      <div className=" h-84 bg-[#f0f0f0] rounded-2xl flex items-center justify-center overflow-hidden h-60">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-contain p-4"
-        />
-      </div>
+  const dispatch = useDispatch();
 
-      {/* Info + Cart row */}
-      <div className="mt-3 px-1 flex items-end justify-between">
-        {/* Text info */}
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-gray-400">{product.brand}</span>
-          <p className="text-sm font-semibold text-gray-800 leading-tight">
-            {product.name}
-          </p>
-          {/* Stars */}
-          <div className="flex gap-0.5">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <FaStar
-                key={star}
-                size={13}
-                className={
-                  star <= product.rating ? "text-yellow-400" : "text-gray-200"
-                }
-              />
-            ))}
-          </div>
-          <p className="text-sm font-bold text-gray-800 mt-0.5">
-            ₹{product.price}
-          </p>
+  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  
+
+  const isWishlisted = wishlistItems.some((item) => item._id === product._id);
+
+  const handleWishlist = (e) => {
+    e.preventDefault();
+
+    if (isWishlisted) {
+      dispatch(removeFromWishlist(product._id));
+    } else {
+      dispatch(addToWishlist(product));
+    }
+  };
+
+  const handleAddToCart = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const alreadyInCart = cartItems.some(
+  (item) => item._id === product._id
+);
+
+if (alreadyInCart) {
+  alert("Already added to cart!");
+  return;
+}
+
+  dispatch(
+    addToCart({
+      _id: product._id,
+      name: product.name,
+      image: product.images?.[0]?.url || "",
+      price: product.price,
+      qty: 1,
+      size: "M",
+      color: "Default",
+      colorHex: "#999",
+    })
+  );
+
+  alert("Product added")
+};
+
+  return (
+    <Link to={`/product/${product._id}`} className="block">
+      <div className="w-full bg-white border border-[#cdeef0] rounded-3xl p-3 shadow-sm hover:shadow-md transition duration-300">
+        {/* Image area — full image visible inside bg, no cropping */}
+        <div className="relative w-full h-72 bg-[#f0f0f0] rounded-2xl overflow-hidden flex items-center justify-center">
+          <img
+            src={product.images?.[0]?.url}
+            alt={product.name}
+            className="w-full h-full object-contain "
+          />
+
+          {/* Wishlist button */}
+          <button
+            onClick={handleWishlist}
+            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:border-red-300 transition-all duration-200"
+          >
+            <FiHeart
+              size={15}
+              style={{
+                fill: isWishlisted ? "#ef4444" : "none",
+                stroke: isWishlisted ? "#ef4444" : "#9ca3af",
+                transition: "all 0.2s",
+              }}
+            />
+          </button>
         </div>
 
-        {/* Cart button — bottom right */}
-        <button className="flex-shrink-0 bg-[#e8f6ea] border border-[#c8eacb] p-2.5 rounded-full text-[#088178] hover:bg-[#d4f0d8] transition-colors cursor-pointer">
-          <FiShoppingCart size={18} />
-        </button>
+        {/* Info + Cart row */}
+        <div className="mt-4 px-1 pb-1 flex items-end justify-between gap-2">
+          {/* Text info */}
+          <div className="flex flex-col gap-1 min-w-0">
+            <span className="text-xs text-gray-400 truncate">
+              {product.brand}
+            </span>
+            <p className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2">
+              {product.name}
+            </p>
+            <div className="flex gap-0.5 mt-0.5">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  size={13}
+                  className={
+                    star <= product.rating ? "text-yellow-400" : "text-gray-200"
+                  }
+                />
+              ))}
+            </div>
+            <p className="text-sm font-bold text-gray-800 mt-1">
+              ₹{product.price}
+            </p>
+          </div>
+
+          {/* Cart button */}
+          <button  onClick={handleAddToCart} className="flex-shrink-0 bg-[#e8f6ea] border border-[#c8eacb] p-2.5 rounded-full text-[#088178] hover:bg-[#d4f0d8] transition-colors cursor-pointer">
+            <FiShoppingCart size={18} />
+          </button>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
 import {
   FiSearch,
   FiFilter,
@@ -7,42 +8,40 @@ import {
   FiTrash2,
   FiChevronDown,
 } from "react-icons/fi";
-import { FaStar } from "react-icons/fa";
 
 import { categories } from "./adminData";
 import AddProduct from "./AddProduct";
 import EditProduct from "./EditProduct";
 
-
-
 import {
   useGetProductsQuery,
   useDeleteProductMutation,
-  
 } from "../../redux/api/productApiSlice";
 
-export default function ProductsPage() {
+export default function ProductsPage({onAddProduct, onEditProduct}) {
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("All");
-  const [modal, setModal] = useState(null);
+ 
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
 
-  const { data, isLoading, error } = useGetProductsQuery();
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const [deleteProduct] = useDeleteProductMutation();
+  const { data, isLoading, error } = useGetProductsQuery({
+    search: debouncedSearch,
+    category: filterCat,
+    limit: 100, // admin usually sees more items
+  });
 
   const products = data?.products || [];
-
-  const filteredProducts = products.filter((p) => {
-    const name = p?.name?.toLowerCase() || "";
-    const brand = p?.brand?.toLowerCase() || "";
-    const query = search.toLowerCase();
-
-    const matchSearch = name.includes(query) || brand.includes(query);
-
-    const matchCat = filterCat === "All" || p.category === filterCat;
-
-    return matchSearch && matchCat;
-  });
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
@@ -122,8 +121,8 @@ export default function ProductsPage() {
 
         {/* Add Button */}
         <button
-          onClick={() => setModal("add")}
-          className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+          onClick={onAddProduct}
+          className="flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold"
         >
           <FiPlus size={16} />
           Add Product
@@ -146,14 +145,14 @@ export default function ProductsPage() {
             </thead>
 
             <tbody className="divide-y divide-slate-100">
-              {filteredProducts.length === 0 ? (
+              {products.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-10 text-slate-400">
                     No products found
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((p) => {
+                products.map((p) => {
                   const hasDiscount =
                     p.discountPrice &&
                     Number(p.discountPrice) < Number(p.price);
@@ -163,10 +162,10 @@ export default function ProductsPage() {
                       {/* Product */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 rounded-lg overflow-hidden border bg-slate-100">
-                            {p.image ? (
+                          <div className="w-20 h-20 rounded-lg overflow-hidden  bg-slate-100">
+                            {p.images?.[0]?.url ? (
                               <img
-                                src={p.image}
+                                src={p.images[0].url}
                                 alt={p.name}
                                 className="w-full h-full object-cover"
                               />
@@ -193,7 +192,7 @@ export default function ProductsPage() {
                         <div className="text-xs">
                           <p>Sizes: {p.sizes || "-"}</p>
 
-                          <p>Colors: {p.colors || "-"}</p>
+                          <p>Colors: {p.color?.name|| "-"}</p>
                         </div>
                       </td>
 
@@ -215,21 +214,10 @@ export default function ProductsPage() {
                       </td>
 
                       {/* Stock + Rating */}
-                      <td className="px-6 py-4">
-                        <div>{p.stock} units</div>
 
-                        <div className="flex gap-0.5 mt-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <FaStar
-                              key={star}
-                              size={11}
-                              className={
-                                star <= (p.rating || 0)
-                                  ? "text-amber-400"
-                                  : "text-slate-200"
-                              }
-                            />
-                          ))}
+                      <td className="px-8 py-4">
+                        <div className="text-sm text-slate-500 justify-center">
+                          {p.countInStock}
                         </div>
                       </td>
 
@@ -237,7 +225,7 @@ export default function ProductsPage() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
                           <button
-                            onClick={() => setModal(p)}
+                            onClick={() => onEditProduct(p)}
                             className="p-2 hover:bg-slate-100 rounded"
                           >
                             <FiEdit2 size={14} />
@@ -260,12 +248,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
-      {modal === "add" && <AddProduct onClose={() => setModal(null)} />}
-
-      {modal && modal !== "add" && (
-        <EditProduct product={modal} onClose={() => setModal(null)} />
-      )}
+     
     </div>
   );
 }

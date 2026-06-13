@@ -1,13 +1,33 @@
 import React, { useState } from "react";
 import { FiTrash2, FiSend, FiCheck } from "react-icons/fi";
+import { useGetSubscribersQuery, useDeleteSubscriberMutation,} from "../../redux/api/newsletterApiSlice"
 
-export default function SubscriptionPage({ subscribers, setSubscribers }) {
+export default function SubscriptionPage() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
 
-  const handleDelete = (id) =>
-    setSubscribers(subscribers.filter((s) => s.id !== id));
+
+
+const { data, isLoading } = useGetSubscribersQuery();
+
+const subscriberList = Array.isArray(data)
+  ? data
+  : data?.subscribers || data || [];
+
+  const [deleteSubscriber] = useDeleteSubscriberMutation();
+
+
+   const handleDelete = async (id) => {
+  try {
+    await deleteSubscriber(id).unwrap();
+  } catch (err) {
+    console.log(err);
+  }
+
+  
+};
+  
 
   const handleSend = () => {
     if (!subject || !message) return;
@@ -17,6 +37,10 @@ export default function SubscriptionPage({ subscribers, setSubscribers }) {
     setTimeout(() => setSent(false), 3000);
   };
 
+
+ 
+
+  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Subscriber List */}
@@ -24,18 +48,18 @@ export default function SubscriptionPage({ subscribers, setSubscribers }) {
         <div className="flex items-center justify-between mb-5">
           <h3 className="font-bold text-gray-800 text-base">Subscribed Users</h3>
           <span className="bg-[#e8f6ea] text-[#01796F] text-xs font-bold px-3 py-1 rounded-full">
-            {subscribers.length} total
+            {subscriberList.length} total
           </span>
         </div>
         <div className="space-y-3">
-          {subscribers.length === 0 ? (
+          {subscriberList.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">
               No subscribers yet
             </p>
           ) : (
-            subscribers.map((sub) => (
+            subscriberList.map((sub) => (
               <div
-                key={sub.id}
+                key={sub._id}
                 className="flex items-center justify-between p-3 rounded-xl bg-[#f8fffe] border border-[#e8f0ef] hover:border-[#b2d8d5] transition-colors"
               >
                 <div>
@@ -43,7 +67,7 @@ export default function SubscriptionPage({ subscribers, setSubscribers }) {
                   <p className="text-xs text-gray-400 mt-0.5">Joined {sub.date}</p>
                 </div>
                 <button
-                  onClick={() => handleDelete(sub.id)}
+                  onClick={() => handleDelete(sub._id)}
                   className="text-gray-300 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-red-50"
                 >
                   <FiTrash2 size={15} />
@@ -88,7 +112,7 @@ export default function SubscriptionPage({ subscribers, setSubscribers }) {
             className="w-full bg-[#01796F] text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-[#015f57] transition-colors flex items-center justify-center gap-2"
           >
             <FiSend size={14} />
-            Send to {subscribers.length} Subscribers
+            Send to {subscriberList.length} Subscribers
           </button>
 
           {sent && (
