@@ -38,7 +38,7 @@ const cartSlice = createSlice({
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
 
-    // ✅ Now matches by _id + size + color so each size is a separate line item
+  
     removeFromCart: (state, action) => {
       const { _id, size, color } = action.payload;
       state.cartItems = state.cartItems.filter(
