@@ -84,7 +84,7 @@ export default function Footer() {
         {/* Newsletter + Payments */}
         <div className="lg:col-span-4">
           
-          <Newsletter/>
+          <NewsLetter/>
 
           <h4 className="text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-3">
             Secured Payment Gateways
