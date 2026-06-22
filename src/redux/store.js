@@ -7,7 +7,7 @@ import adminReducer from "./slices/adminSlice";
 import cartReducer from "./slices/cartSlice";
 import wishlistReducer from "./slices/wishlistSlice"
 import { productApiSlice } from "./api/productApiSlice";
-import { newsletterApiSlice } from "./api/newsLetterApiSlice";
+import { newsletterApiSlice } from "./api/newsletterApiSlice";
 import {orderApiSlice} from "./api/orderApiSlice";
 
 export const store = configureStore({
