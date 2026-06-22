@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 
 import Navebar from "./Navebar";
-import Newsletter from "./Newsletter";
+import NewsLetter from "./NewsLetter";
 import Footer from "./Footer";
 
 export default function Layout() {
