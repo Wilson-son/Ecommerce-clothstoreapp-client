@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../redux/slices/cartSlice";
-import { removeFromWishlist } from "../redux/slices/wishlistSlice";
+import { addToCart } from "../redux/slices/cartSlice.js";
+import { removeFromWishlist } from "../redux/slices/wishlistSlice.js";
 
-import {createCartItem} from "../utils/createCartItem.js"
+import { createCartItem } from "../utils/createCartItem.js";
 
 import {
   FiHeart,
@@ -16,7 +16,7 @@ import {
   FiPackage,
 } from "react-icons/fi";
 
-// ── Star Rating 
+// ── Star Rating
 function StarRating({ rating }) {
   return (
     <div className="flex items-center gap-0.5">
@@ -37,11 +37,11 @@ function StarRating({ rating }) {
   );
 }
 
-// ── Placeholder 
+// ── Placeholder
 const PLACEHOLDER =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='14' fill='%239ca3af'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-// ── Wishlist Card 
+// ── Wishlist Card
 function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
@@ -52,7 +52,8 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
   const discountPct =
     product.originalPrice && product.originalPrice > product.price
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) * 100,
+          ((product.originalPrice - product.price) / product.originalPrice) *
+            100,
         )
       : null;
 
@@ -169,18 +170,39 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
             className="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all duration-300 border select-none"
             style={
               outOfStock
-                ? { background: "#f5f5f5", color: "#b5b5b5", borderColor: "transparent", cursor: "not-allowed" }
+                ? {
+                    background: "#f5f5f5",
+                    color: "#b5b5b5",
+                    borderColor: "transparent",
+                    cursor: "not-allowed",
+                  }
                 : isAdded
-                ? { background: "#E6F7F2", color: "#0a6e56", borderColor: "#a3e2cd", cursor: "default" }
-                : { background: "#111", color: "#fff", borderColor: "transparent", cursor: "pointer" }
+                  ? {
+                      background: "#E6F7F2",
+                      color: "#0a6e56",
+                      borderColor: "#a3e2cd",
+                      cursor: "default",
+                    }
+                  : {
+                      background: "#111",
+                      color: "#fff",
+                      borderColor: "transparent",
+                      cursor: "pointer",
+                    }
             }
           >
             {outOfStock ? (
-              <><FiPackage size={12} /> Sold Out</>
+              <>
+                <FiPackage size={12} /> Sold Out
+              </>
             ) : isAdded ? (
-              <><FiCheck size={12} strokeWidth={3} /> Added</>
+              <>
+                <FiCheck size={12} strokeWidth={3} /> Added
+              </>
             ) : (
-              <><FiShoppingCart size={12} /> Add</>
+              <>
+                <FiShoppingCart size={12} /> Add
+              </>
             )}
           </button>
         </div>
@@ -189,22 +211,23 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
   );
 }
 
-
 export default function Wishlist() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const wishlistItems = useSelector((state) => state.wishlist?.wishlistItems || []);
+  const wishlistItems = useSelector(
+    (state) => state.wishlist?.wishlistItems || [],
+  );
 
-  
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const isInCart = (productId) => cartItems.some((item) => item._id === productId);
+  const isInCart = (productId) =>
+    cartItems.some((item) => item._id === productId);
 
   const [removingItems, setRemovingItems] = useState({});
 
- const handleAddToCart = (product) => {
-  dispatch(addToCart(createCartItem(product)));
-};
+  const handleAddToCart = (product) => {
+    dispatch(addToCart(createCartItem(product)));
+  };
 
   const handleRemove = (id) => {
     setRemovingItems((prev) => ({ ...prev, [id]: true }));
@@ -225,7 +248,9 @@ export default function Wishlist() {
   };
 
   const totalValue = wishlistItems.reduce((sum, p) => sum + (p.price || 0), 0);
-  const availableCount = wishlistItems.filter((p) => p.inStock !== false).length;
+  const availableCount = wishlistItems.filter(
+    (p) => p.inStock !== false,
+  ).length;
 
   //  pendingCount — items available but not yet in cart
   const pendingCount = wishlistItems.filter(
@@ -238,7 +263,6 @@ export default function Wishlist() {
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
-
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 pb-6 mb-8">
           <div className="flex items-center gap-4">
@@ -280,9 +304,12 @@ export default function Wishlist() {
             <div className="w-16 h-16 rounded-2xl bg-[#e8f6ea] flex items-center justify-center mb-4 text-[#088178]">
               <FiHeart size={26} className="fill-current" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">Your wishlist is empty</h2>
+            <h2 className="text-lg font-bold text-gray-900">
+              Your wishlist is empty
+            </h2>
             <p className="text-xs text-gray-400 max-w-xs mt-2 mb-6 leading-relaxed">
-              Browse our collections and tap the heart icon on products you love to save them here.
+              Browse our collections and tap the heart icon on products you love
+              to save them here.
             </p>
             <button
               onClick={() => navigate("/")}
@@ -302,7 +329,7 @@ export default function Wishlist() {
                 product={product}
                 onRemove={handleRemove}
                 onAddToCart={handleAddToCart}
-                isAdded={isInCart(product._id)} 
+                isAdded={isInCart(product._id)}
                 isRemoving={!!removingItems[product._id]}
               />
             ))}
@@ -327,11 +354,17 @@ export default function Wishlist() {
           <div className="mt-8 bg-white border border-gray-100 rounded-2xl px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
             <div className="flex items-center flex-wrap gap-x-5 gap-y-1 text-xs font-semibold text-gray-500">
               <span>
-                Saved: <span className="text-gray-900 font-bold">{wishlistItems.length}</span>
+                Saved:{" "}
+                <span className="text-gray-900 font-bold">
+                  {wishlistItems.length}
+                </span>
               </span>
               <span className="hidden sm:inline text-gray-200">|</span>
               <span>
-                In stock: <span className="text-green-600 font-bold">{availableCount}</span>
+                In stock:{" "}
+                <span className="text-green-600 font-bold">
+                  {availableCount}
+                </span>
               </span>
               <span className="hidden sm:inline text-gray-200">|</span>
               <span>
