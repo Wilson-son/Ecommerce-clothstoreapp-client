@@ -2,7 +2,7 @@ import React from "react";
 import { FaTwitter, FaGithub, FaLinkedinIn, FaYoutube, FaApple, FaGooglePlay } from "react-icons/fa";
 import caralogo from "../assets/caralogo.png";
 
-import Newsletter from "./Newsletter";
+import NewsLetter from "./NewsLetter";
 
 
 
