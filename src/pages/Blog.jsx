@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bookbg from "../assets/bookbg.avif";
 
+import blogimage1 from "../assets/blogimage1.avif";
+import blogimage2 from "../assets/blogimage2.jpg";
+import blogimage4 from "../assets/blogimage4.avif";
+import blogimage5 from "../assets/blogimage5.webp";
+import blogimage8 from "../assets/blogimage8.jpg";
 
 const blogs = [
   {
@@ -10,8 +15,7 @@ const blogs = [
     title: "The Cotton Jersey Zip-Up Hoodie",
     excerpt:
       "The Cotton Jersey Zip-Up Hoodie is a versatile and comfortable outerwear piece that combines style and functionality. Crafted from high-quality cotton jersey fabric, this hoodie offers a cozy feel and a casual yet fashionable look.",
-    image:
-      "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=900&q=80",
+    image: blogimage2,
   },
   {
     id: 2,
@@ -19,8 +23,7 @@ const blogs = [
     title: "How to Style a Quiff",
     excerpt:
       "The Quiff is a timeless and sophisticated hairstyle that never fails to make a statement. With its voluminous and sculpted front, it adds a touch of elegance and charm to any look.",
-    image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=80",
+    image: blogimage8,
   },
   {
     id: 3,
@@ -28,8 +31,7 @@ const blogs = [
     title: "Must-Have Skater Girl Items",
     excerpt:
       "Must-Have Skater Girl Items are essential for adding a cool and edgy vibe to your wardrobe. From skateboard to streetwear, these items perfectly capture the skater girl aesthetic.",
-    image:
-      "https://images.unsplash.com/photo-1532453288672-3a17ac36f101?w=900&q=80",
+    image: blogimage1,
   },
   {
     id: 4,
@@ -37,8 +39,7 @@ const blogs = [
     title: "Runway-Inspired Trends",
     excerpt:
       "Runway-Inspired Trends are the ultimate source of fashion inspiration, bringing high-end style to everyday life. From bold prints to statement accessories, these trends allow you to express your creativity and stay ahead of the fashion curve.",
-    image:
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=900&q=80",
+    image: blogimage5,
   },
   {
     id: 5,
@@ -46,8 +47,7 @@ const blogs = [
     title: "AW20 Menswear Trends",
     excerpt:
       "AW20 Menswear Trends are all about blending sophistication with a touch of rebellion. From tailored outerwear to statement accessories, these trends offer a contemporary and stylish approach to men's fashion.",
-    image:
-      "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=900&q=80",
+    image: blogimage4,
   },
   {
     id: 6,
@@ -82,7 +82,7 @@ export default function Blog() {
     >
       {/*
           HERO — #readmore banner*/}
-      
+
       <div
         style={{
           position: "relative",

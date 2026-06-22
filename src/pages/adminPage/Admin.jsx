@@ -6,6 +6,7 @@ import EditProduct from "./EditProduct.jsx";
 import DashboardPage from "./DashboardPage.jsx";
 import ProductsPage from "./ProductsPage.jsx";
 import SubscriptionPage from "./SubscriptionPage";
+import AdminOrders from "./AdminOrders.jsx"
 
 
 export default function Admin() {
@@ -43,8 +44,9 @@ export default function Admin() {
               onEditProduct={(product) => setEditModal(product)}
             />
           )}
-          {activeTab === "newsletter" && (
-            <SubscriptionPage/>
+
+          {activeTab === "orders" && ( <AdminOrders/>)}
+          {activeTab === "newsletter" && ( <SubscriptionPage/>
           )}
         </main>
 

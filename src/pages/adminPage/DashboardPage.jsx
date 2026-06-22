@@ -20,6 +20,7 @@ export default function DashboardPage({ setActiveTab }) {
 const totalUsers = adminData?.totalUsers ?? 0;
 const totalProducts = adminData?.totalProducts ?? 0;
 const totalSubscribers = adminData?.totalSubscribers ?? 0;
+const totalOrders = adminData?.totalOrders ?? 0;
 
 const usersToday = adminData?.usersToday ?? 0;
 const subscribersToday = adminData?.subscribersToday ?? 0;
@@ -62,8 +63,8 @@ const subscribersToday = adminData?.subscribersToday ?? 0;
         <StatCard
           icon={FiShoppingCart}
           label="Total Orders"
-          value="3,762"
-          sub="12 pending"
+          value={totalOrders}
+          sub="Orders"
           color="bg-[#fff7e6] text-[#c97d10]"
         />
         <StatCard

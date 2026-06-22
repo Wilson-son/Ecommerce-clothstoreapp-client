@@ -6,17 +6,17 @@ import { FiShoppingCart, FiHeart } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 
 import { addToCart } from "../redux/slices/cartSlice";
-import {
-  addToWishlist,
-  removeFromWishlist,
-} from "../redux/slices/wishlistSlice";
+import { addToWishlist,removeFromWishlist,} from "../redux/slices/wishlistSlice";
+
+import {createCartItem} from "../utils/createCartItem.js"
+
+import { toast } from "react-toastify";
 
 export default function ProductCard({ product }) {
   const dispatch = useDispatch();
 
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
   const cartItems = useSelector((state) => state.cart.cartItems);
-  
 
   const isWishlisted = wishlistItems.some((item) => item._id === product._id);
 
@@ -31,33 +31,20 @@ export default function ProductCard({ product }) {
   };
 
   const handleAddToCart = (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-  const alreadyInCart = cartItems.some(
-  (item) => item._id === product._id
-);
+    const alreadyInCart = cartItems.some((item) => item._id === product._id);
 
-if (alreadyInCart) {
-  alert("Already added to cart!");
-  return;
-}
+    if (alreadyInCart) {
+      toast.warning("Already added to cart!");
+      return;
+    }
 
-  dispatch(
-    addToCart({
-      _id: product._id,
-      name: product.name,
-      image: product.images?.[0]?.url || "",
-      price: product.price,
-      qty: 1,
-      size: "M",
-      color: "Default",
-      colorHex: "#999",
-    })
-  );
+    dispatch(addToCart(createCartItem(product)));
 
-  alert("Product added")
-};
+    toast.success("Product added to cart!");
+  };
 
   return (
     <Link to={`/product/${product._id}`} className="block">
@@ -113,7 +100,10 @@ if (alreadyInCart) {
           </div>
 
           {/* Cart button */}
-          <button  onClick={handleAddToCart} className="flex-shrink-0 bg-[#e8f6ea] border border-[#c8eacb] p-2.5 rounded-full text-[#088178] hover:bg-[#d4f0d8] transition-colors cursor-pointer">
+          <button
+            onClick={handleAddToCart}
+            className="flex-shrink-0 bg-[#e8f6ea] border border-[#c8eacb] p-2.5 rounded-full text-[#088178] hover:bg-[#d4f0d8] transition-colors cursor-pointer"
+          >
             <FiShoppingCart size={18} />
           </button>
         </div>

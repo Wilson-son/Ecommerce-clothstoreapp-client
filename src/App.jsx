@@ -16,6 +16,9 @@ import Wishlist from "./pages/Wishlist"
 import About from "./pages/About"
 import Blog from "./pages/Blog"
 import Profile from "./pages/Profile"
+import ProductDetail from "./pages/ProductDetail";
+import Checkout from "./pages/Checkout"
+import Orders from "./pages/Orders";
 
 
 
@@ -25,9 +28,10 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 
 
-import ProductDetail from "./pages/ProductDetail";
+
 
 import Admin from "./pages/adminpage/Admin";
+import AdminOrders from "./pages/adminpage/AdminOrders";
 import SubscriptionPage from "./pages/adminpage/SubscriptionPage";
 import AddProduct from "./pages/adminpage/AddProduct";
 import EditProduct from "./pages/adminpage/EditProduct";
@@ -35,6 +39,8 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import AdminRoute from "./routes/AdminRoute";
 
 import { loadUserThunk } from "./redux/slices/authSlice";
+
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const dispatch = useDispatch();
@@ -47,6 +53,9 @@ function App() {
   return (
     <Router>
     <Navebar/>
+    
+    <ToastContainer position="bottom-right" autoClose={2000} />
+
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
@@ -56,13 +65,16 @@ function App() {
           <Route path="/Whishlist" element={<ProtectedRoute> <Wishlist /> </ProtectedRoute> }/> 
           <Route path="/about" element={<ProtectedRoute>     <About />   </ProtectedRoute> }/>
           <Route path="/blog" element={<ProtectedRoute> <Blog /> </ProtectedRoute>} />
-         <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /> </ProtectedRoute>} />
+          <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /> </ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute> <Checkout /> </ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute> <Orders /> </ProtectedRoute>} />
         </Route>
 
         <Route  path="/admin" element={<AdminRoute><Admin /> </AdminRoute> } />
           <Route path="/admin/subscriptions" element={<AdminRoute><SubscriptionPage /> </AdminRoute>} />
           <Route path="/admin/add-product" element={<AdminRoute><AddProduct /> </AdminRoute>} />
           <Route path="/admin/edit-product/:id" element={<AdminRoute><EditProduct /> </AdminRoute>} />
+          <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
           
         {/* Pages without footer/navbar */}
         <Route path="/login" element={<Login />} />

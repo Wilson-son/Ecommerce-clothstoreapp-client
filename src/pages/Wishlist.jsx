@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/slices/cartSlice";
+import { removeFromWishlist } from "../redux/slices/wishlistSlice";
+
+import {createCartItem} from "../utils/createCartItem.js"
+
 import {
   FiHeart,
   FiShoppingCart,
@@ -9,12 +15,8 @@ import {
   FiCheck,
   FiPackage,
 } from "react-icons/fi";
-import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../redux/slices/cartSlice";
-import { removeFromWishlist } from "../redux/slices/wishlistSlice";
 
-
-// ── Star Rating ───────────────────────────────────────────────────────────────
+// ── Star Rating 
 function StarRating({ rating }) {
   return (
     <div className="flex items-center gap-0.5">
@@ -35,11 +37,11 @@ function StarRating({ rating }) {
   );
 }
 
-// ── Placeholder image ─────────────────────────────────────────────────────────
+// ── Placeholder 
 const PLACEHOLDER =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='14' fill='%239ca3af'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-// ── Product Card ──────────────────────────────────────────────────────────────
+// ── Wishlist Card 
 function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
   const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
@@ -50,8 +52,7 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
   const discountPct =
     product.originalPrice && product.originalPrice > product.price
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) *
-            100,
+          ((product.originalPrice - product.price) / product.originalPrice) * 100,
         )
       : null;
 
@@ -64,24 +65,22 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
         transition: "opacity 280ms ease, transform 280ms ease",
       }}
     >
-      {/* ── Image ── */}
+      {/* Image */}
       <div className="relative aspect-square bg-[#f9f9f9] overflow-hidden">
         <img
           src={imgSrc}
           alt={product.name}
           onError={() => setImgError(true)}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full  object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
 
-        {/* Discount badge */}
         {discountPct && !outOfStock && (
           <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-red-500 text-white shadow-sm">
             -{discountPct}%
           </span>
         )}
 
-        {/* Custom badge */}
         {product.badge && !discountPct && (
           <span
             className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-sm"
@@ -94,7 +93,6 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
           </span>
         )}
 
-        {/* Action buttons — always visible on mobile, hover on desktop */}
         <div className="absolute top-3 right-3 flex flex-col gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={() => onRemove(product._id)}
@@ -106,9 +104,14 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
           <button
             onClick={() => {
               if (navigator.share) {
-                navigator.share({ title: product.name, url: window.location.origin + `/product/${product._id}` });
+                navigator.share({
+                  title: product.name,
+                  url: window.location.origin + `/product/${product._id}`,
+                });
               } else {
-                navigator.clipboard?.writeText(window.location.origin + `/product/${product._id}`);
+                navigator.clipboard?.writeText(
+                  window.location.origin + `/product/${product._id}`,
+                );
               }
             }}
             className="w-8 h-8 rounded-lg bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors shadow-sm"
@@ -118,7 +121,6 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
           </button>
         </div>
 
-        {/* Out of stock overlay */}
         {outOfStock && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px] flex items-center justify-center">
             <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 bg-white border border-gray-200 px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5">
@@ -129,9 +131,8 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
         )}
       </div>
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div className="p-4 flex flex-col flex-1 gap-3">
-        {/* Brand + name */}
         <div>
           <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
             {product.brand || "Brand"}
@@ -150,7 +151,6 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
           </div>
         </div>
 
-        {/* Price + CTA */}
         <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-auto">
           <div className="flex flex-col leading-tight">
             <span className="text-base font-black text-gray-900">
@@ -163,49 +163,24 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
             )}
           </div>
 
-          {/* ── Add to Cart button — stays "Added" permanently ── */}
           <button
             onClick={() => !outOfStock && !isAdded && onAddToCart(product)}
             disabled={outOfStock || isAdded}
             className="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all duration-300 border select-none"
             style={
               outOfStock
-                ? {
-                    background: "#f5f5f5",
-                    color: "#b5b5b5",
-                    borderColor: "transparent",
-                    cursor: "not-allowed",
-                  }
+                ? { background: "#f5f5f5", color: "#b5b5b5", borderColor: "transparent", cursor: "not-allowed" }
                 : isAdded
-                ? {
-                    background: "#E6F7F2",
-                    color: "#0a6e56",
-                    borderColor: "#a3e2cd",
-                    cursor: "default",
-                  }
-                : {
-                    background: "#111",
-                    color: "#fff",
-                    borderColor: "transparent",
-                    cursor: "pointer",
-                  }
+                ? { background: "#E6F7F2", color: "#0a6e56", borderColor: "#a3e2cd", cursor: "default" }
+                : { background: "#111", color: "#fff", borderColor: "transparent", cursor: "pointer" }
             }
           >
             {outOfStock ? (
-              <>
-                <FiPackage size={12} />
-                Sold Out
-              </>
+              <><FiPackage size={12} /> Sold Out</>
             ) : isAdded ? (
-              <>
-                <FiCheck size={12} strokeWidth={3} />
-                Added
-              </>
+              <><FiCheck size={12} strokeWidth={3} /> Added</>
             ) : (
-              <>
-                <FiShoppingCart size={12} />
-                Add
-              </>
+              <><FiShoppingCart size={12} /> Add</>
             )}
           </button>
         </div>
@@ -214,68 +189,57 @@ function WishlistCard({ product, onRemove, onAddToCart, isAdded, isRemoving }) {
   );
 }
 
-// ── Main Wishlist Page ────────────────────────────────────────────────────────
+
 export default function Wishlist() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const wishlistItems = useSelector(
-    (state) => state.wishlist?.wishlistItems || [],
-  );
+  const wishlistItems = useSelector((state) => state.wishlist?.wishlistItems || []);
 
-  // Tracks which items have been added to cart (permanent — doesn't reset)
-  const [addedItems, setAddedItems] = useState({});
-  // Tracks which items are animating out before removal
+  
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  const isInCart = (productId) => cartItems.some((item) => item._id === productId);
+
   const [removingItems, setRemovingItems] = useState({});
 
-  const handleAddToCart = (product) => {
-    dispatch(
-      addToCart({
-        _id: product._id,
-        name: product.name,
-        image: product.images?.[0]?.url || "",
-        price: product.price,
-        qty: 1,
-        size: product.sizes?.[0] || "M",
-        color: "Default",
-        colorHex: "#999",
-      }),
-    );
-    // Mark as added permanently — no timeout reset
-    setAddedItems((prev) => ({ ...prev, [product._id]: true }));
-  };
+ const handleAddToCart = (product) => {
+  dispatch(addToCart(createCartItem(product)));
+};
 
   const handleRemove = (id) => {
     setRemovingItems((prev) => ({ ...prev, [id]: true }));
     setTimeout(() => {
       dispatch(removeFromWishlist(id));
-      setRemovingItems((prev) => ({ ...prev, [id]: false }));
-      // Also clean up added state if item is removed
-      setAddedItems((prev) => {
-        const next = { ...prev };
-        delete next[id];
-        return next;
+      setRemovingItems((prev) => {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
       });
     }, 280);
   };
 
   const moveAllToCart = () => {
     wishlistItems
-      .filter((p) => p.inStock !== false && !addedItems[p._id])
+      .filter((p) => p.inStock !== false && !isInCart(p._id))
       .forEach((p) => handleAddToCart(p));
   };
 
   const totalValue = wishlistItems.reduce((sum, p) => sum + (p.price || 0), 0);
   const availableCount = wishlistItems.filter((p) => p.inStock !== false).length;
+
+  //  pendingCount — items available but not yet in cart
   const pendingCount = wishlistItems.filter(
-    (p) => p.inStock !== false && !addedItems[p._id],
+    (p) => p.inStock !== false && !isInCart(p._id),
   ).length;
+
+  //  addedCount — items already in cart
+  const addedCount = wishlistItems.filter((p) => isInCart(p._id)).length;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
 
-        {/* ── Header ── */}
+        {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 pb-6 mb-8">
           <div className="flex items-center gap-4">
             <button
@@ -310,18 +274,15 @@ export default function Wishlist() {
           )}
         </div>
 
-        {/* ── Empty State ── */}
+        {/* Empty State */}
         {wishlistItems.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 bg-white border border-gray-100 rounded-3xl text-center max-w-sm mx-auto shadow-sm px-8">
             <div className="w-16 h-16 rounded-2xl bg-[#e8f6ea] flex items-center justify-center mb-4 text-[#088178]">
               <FiHeart size={26} className="fill-current" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">
-              Your wishlist is empty
-            </h2>
+            <h2 className="text-lg font-bold text-gray-900">Your wishlist is empty</h2>
             <p className="text-xs text-gray-400 max-w-xs mt-2 mb-6 leading-relaxed">
-              Browse our collections and tap the heart icon on products you love
-              to save them here.
+              Browse our collections and tap the heart icon on products you love to save them here.
             </p>
             <button
               onClick={() => navigate("/")}
@@ -332,11 +293,8 @@ export default function Wishlist() {
           </div>
         )}
 
-        {/* ── Cards Grid ── */}
-        
-       
+        {/* Cards Grid */}
         {wishlistItems.length > 0 && (
-          
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {wishlistItems.map((product) => (
               <WishlistCard
@@ -344,16 +302,14 @@ export default function Wishlist() {
                 product={product}
                 onRemove={handleRemove}
                 onAddToCart={handleAddToCart}
-                isAdded={!!addedItems[product._id]}
+                isAdded={isInCart(product._id)} 
                 isRemoving={!!removingItems[product._id]}
               />
             ))}
           </div>
-         
         )}
-        
-        
-        {/* ── Mobile sticky CTA ── */}
+
+        {/* Mobile CTA */}
         {pendingCount > 0 && (
           <div className="sm:hidden mt-6">
             <button
@@ -366,27 +322,21 @@ export default function Wishlist() {
           </div>
         )}
 
-        {/* ── Summary strip ── */}
+        {/* Summary strip */}
         {wishlistItems.length > 0 && (
           <div className="mt-8 bg-white border border-gray-100 rounded-2xl px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
             <div className="flex items-center flex-wrap gap-x-5 gap-y-1 text-xs font-semibold text-gray-500">
               <span>
-                Saved:{" "}
-                <span className="text-gray-900 font-bold">
-                  {wishlistItems.length}
-                </span>
+                Saved: <span className="text-gray-900 font-bold">{wishlistItems.length}</span>
               </span>
               <span className="hidden sm:inline text-gray-200">|</span>
               <span>
-                In stock:{" "}
-                <span className="text-green-600 font-bold">{availableCount}</span>
+                In stock: <span className="text-green-600 font-bold">{availableCount}</span>
               </span>
               <span className="hidden sm:inline text-gray-200">|</span>
               <span>
                 Added to cart:{" "}
-                <span className="text-[#088178] font-bold">
-                  {Object.keys(addedItems).length}
-                </span>
+                <span className="text-[#088178] font-bold">{addedCount}</span>
               </span>
               <span className="hidden sm:inline text-gray-200">|</span>
               <span>

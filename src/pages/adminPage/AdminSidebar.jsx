@@ -1,10 +1,11 @@
 import React from "react";
-import { FiBarChart2, FiPackage, FiMail, FiChevronDown } from "react-icons/fi";
+import { FiBarChart2, FiPackage, FiMail, FiShoppingCart,FiShoppingBag, FiChevronDown } from "react-icons/fi";
 import { HiMiniShoppingBag } from "react-icons/hi2";
 
 const tabs = [
   { key: "dashboard", label: "Dashboard", icon: FiBarChart2 },
   { key: "products", label: "Products", icon: FiPackage },
+  { key: "orders", label: "orders", icon: FiShoppingCart },
   { key: "newsletter", label: "Newsletter", icon: FiMail },
 ];
 

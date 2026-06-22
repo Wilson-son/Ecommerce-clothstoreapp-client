@@ -38,11 +38,12 @@ const cartSlice = createSlice({
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
 
+    // ✅ Now matches by _id + size + color so each size is a separate line item
     removeFromCart: (state, action) => {
+      const { _id, size, color } = action.payload;
       state.cartItems = state.cartItems.filter(
-        (i) => i._id !== action.payload
+        (i) => !(i._id === _id && i.size === size && i.color === color)
       );
-
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
 
@@ -58,9 +59,7 @@ const cartSlice = createSlice({
           i.size === action.payload.size &&
           i.color === action.payload.color
       );
-
       if (item) item.qty += 1;
-
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
 
@@ -71,9 +70,7 @@ const cartSlice = createSlice({
           i.size === action.payload.size &&
           i.color === action.payload.color
       );
-
       if (item && item.qty > 1) item.qty -= 1;
-
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
   },
