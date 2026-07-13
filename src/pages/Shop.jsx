@@ -326,7 +326,7 @@ export default function Shop() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                 {products.map(product => (
                   <div key={product._id} className="overflow-hidden rounded-3xl">
                     <ProductCard product={product} />

@@ -33,7 +33,7 @@ const whiteTshirtStyle = { backgroundImage: `url(${whitetshirt})` };
 // ── Skeleton Grid Loader ──
 function GridSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 container mx-auto px-4 md:px-8 mt-8">
+    <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-4 gap-6 container mx-auto px-4 md:px-8 mt-8">
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
@@ -80,7 +80,7 @@ export default function Home() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 container mx-auto  px-4 md:px-8 mt-10 ">
+          <div className="grid grid-cols-3  sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 container mx-auto  px-4 md:px-8 mt-10 ">
             {featured.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
@@ -126,7 +126,7 @@ export default function Home() {
         {isLoading ? (
           <GridSkeleton />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 container mx-auto px-4 md:px-8 mt-10">
+          <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 container mx-auto px-4 md:px-8 mt-10">
             {newArrivals.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
