@@ -13,17 +13,14 @@ export default function DashboardPage({ setActiveTab }) {
   const dispatch = useDispatch();
 
   const { data: adminData, loading } = useSelector((state) => state.admin);
- console.log(adminData);
- 
 
+  const totalUsers = adminData?.totalUsers ?? 0;
+  const totalProducts = adminData?.totalProducts ?? 0;
+  const totalSubscribers = adminData?.totalSubscribers ?? 0;
+  const totalOrders = adminData?.totalOrders ?? 0;
 
-const totalUsers = adminData?.totalUsers ?? 0;
-const totalProducts = adminData?.totalProducts ?? 0;
-const totalSubscribers = adminData?.totalSubscribers ?? 0;
-const totalOrders = adminData?.totalOrders ?? 0;
-
-const usersToday = adminData?.usersToday ?? 0;
-const subscribersToday = adminData?.subscribersToday ?? 0;
+  const usersToday = adminData?.usersToday ?? 0;
+  const subscribersToday = adminData?.subscribersToday ?? 0;
 
   useEffect(() => {
     dispatch(fetchAdminDashboard());
@@ -35,16 +32,14 @@ const subscribersToday = adminData?.subscribersToday ?? 0;
     ? data
     : data?.products || data?.data || [];
 
- 
-
   const recentProducts = [...productList]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 10);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           icon={FiPackage}
           label="Total Products"
@@ -77,8 +72,8 @@ const subscribersToday = adminData?.subscribersToday ?? 0;
       </div>
 
       {/* Recent Products */}
-      <div className="bg-white rounded-2xl shadow-sm border border-[#e8f0ef] p-6">
-        <div className="flex items-center justify-between mb-5">
+      <div className="bg-white rounded-2xl shadow-sm border border-[#e8f0ef] p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
           <h3 className="font-bold text-gray-800">Recent Products</h3>
           <button
             onClick={() => setActiveTab("products")}
@@ -92,7 +87,7 @@ const subscribersToday = adminData?.subscribersToday ?? 0;
             recentProducts.map((p) => (
               <div
                 key={p._id}
-                className="flex items-center gap-4 p-3 rounded-xl hover:bg-[#f8fffe] transition-colors"
+                className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-xl hover:bg-[#f8fffe] transition-colors"
               >
                 <div className="w-10 h-10 rounded-xl bg-[#e8f6ea] flex items-center justify-center overflow-hidden flex-shrink-0">
                   <img
@@ -105,7 +100,7 @@ const subscribersToday = adminData?.subscribersToday ?? 0;
                   <p className="text-sm font-semibold text-gray-800 truncate">
                     {p.name}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 truncate">
                     {p.brand} · {p.category}
                   </p>
                 </div>

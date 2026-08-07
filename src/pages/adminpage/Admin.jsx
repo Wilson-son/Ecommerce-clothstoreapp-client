@@ -6,37 +6,53 @@ import EditProduct from "./EditProduct.jsx";
 import DashboardPage from "./DashboardPage.jsx";
 import ProductsPage from "./ProductsPage.jsx";
 import SubscriptionPage from "./SubscriptionPage";
-import AdminOrders from "./AdminOrders.jsx"
-
+import AdminOrders from "./AdminOrders.jsx";
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
+ 
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editModal, setEditModal] = useState(null);
+
   
+  const handleSetActiveTab = (tab) => {
+    setActiveTab(tab);
+    setMobileOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#F3F5FB] flex">
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 bg-slate-900/40 z-30 md:hidden"
+          aria-hidden="true"
+        />
+      )}
+
       <AdminSidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleSetActiveTab}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
         <AdminTopbar
           activeTab={activeTab}
           onAddProduct={() => setShowAddModal(true)}
+          onOpenMenu={() => setMobileOpen(true)}
         />
 
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-auto">
           {activeTab === "dashboard" && (
-            <DashboardPage
-              
-              setActiveTab={setActiveTab}
-            />
+            <DashboardPage setActiveTab={handleSetActiveTab} />
           )}
           {activeTab === "products" && (
             <ProductsPage
@@ -45,9 +61,8 @@ export default function Admin() {
             />
           )}
 
-          {activeTab === "orders" && ( <AdminOrders/>)}
-          {activeTab === "newsletter" && ( <SubscriptionPage/>
-          )}
+          {activeTab === "orders" && <AdminOrders />}
+          {activeTab === "newsletter" && <SubscriptionPage />}
         </main>
 
         {showAddModal && <AddProduct onClose={() => setShowAddModal(false)} />}
