@@ -50,7 +50,6 @@ export default function Login() {
       setTimeout(() => {
         dispatch(clearMessages());
 
-        
         if (loggedInUser?.role === "admin") {
           nav("/admin");
         } else {
@@ -181,6 +180,11 @@ export default function Login() {
             "Get Started"
           )}
         </button>
+
+        <p className="text-[12px] text-white mb-1 text-center">
+          Test admin login: <strong>admin@clothstore.com</strong> /{" "}
+          <strong>Admintest@123</strong>
+        </p>
       </form>
     </div>
   );
